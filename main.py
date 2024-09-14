@@ -169,49 +169,31 @@ def assign_values(row, variable_used, p, q, r, s, matrix):
 
 
 def operator_and(row, a, b):
-    result = []  # Initialize an empty list to store the results
+    solve_value = [0] * row
     for i in range(row):
-        if a[i] and b[i]:
-            solve_value = 1
-        else:
-            solve_value = 0
-        result.append(solve_value)  # Store each solve_value in the result list
-    return result  # Return the list of results
+        solve_value[i] = a[i] and b[i]
+    return solve_value
 
 
 def operator_or(row, a, b):
-    result = []  # Initialize an empty list to store the results
+    solve_value = [0] * row  # Initialize the result list with 0s
     for i in range(row):
-        if a[i] or b[i]:
-            solve_value = 1
-        else:
-            solve_value = 0
-        result.append(solve_value)  # Append each solve_value to the result list
-    return result  # Return the list of results
-
+        solve_value[i] = a[i] or b[i]  # Perform OR operation
+    return solve_value  # Return the list of results
 
 
 def operator_implies(row, a, b):
-    result = []  # Initialize an empty list to store the results
+    solve_value = [0] * row  # Initialize the result list with 0s
     for i in range(row):
-        if not a[i] or b[i]:
-            solve_value = 1  # If a implies b, set to 1
-        else:
-            solve_value = 0  # Otherwise, set to 0
-        result.append(solve_value)  # Append solve_value to the result list
-    return result  # Return the list of results
-
+        solve_value[i] = (not a[i]) or b[i]  # Perform implies operation (not a or b)
+    return solve_value  # Return the list of results
 
 
 def operator_equivalent(row, a, b):
-    result = []  # Initialize an empty list to store the results
+    solve_value = [0] * row  # Initialize the result list with 0s
     for i in range(row):
-        if a[i] == b[i]:
-            solve_value = 1  # If a and b are equivalent, set to 1
-        else:
-            solve_value = 0  # Otherwise, set to 0
-        result.append(solve_value)  # Append solve_value to the result list
-    return result  # Return the list of results
+        solve_value[i] = (a[i] == b[i])  # Check equivalence (a == b)
+    return solve_value  # Return the list of results
 
 
 def priority (final_str_equation, string_length, count):
@@ -226,94 +208,129 @@ def priority (final_str_equation, string_length, count):
         return temp_priority, count
     
     
-def check_for_not_value (row, final_str_equation, i, p, q, r, s):
+def check_for_not_value(row, final_str_equation, i, p, q, r, s):
+    solve_value = [0] * row  # Initialize list with zeros of size `row`
+    
+    # Check for the variable following 'not'
     if final_str_equation[i + 1] == 'p':
-        for i in range(row):
-            p[i] = not p[i]
-            return p
+        for j in range(row):
+            solve_value[j] = not p[j]  # Negate the value of p
     elif final_str_equation[i + 1] == 'q':
-        for i in range(row):
-            q[i] = not q[i]
-            return q
+        for j in range(row):
+            solve_value[j] = not q[j]  # Negate the value of q
     elif final_str_equation[i + 1] == 'r':
-        for i in range(row):
-            r[i] = not r[i]
-            return r
+        for j in range(row):
+            solve_value[j] = not r[j]  # Negate the value of r
     elif final_str_equation[i + 1] == 's':
-        for i in range(row):
-            s[i] = not s[i]
-            return s
+        for j in range(row):
+            solve_value[j] = not s[j]  # Negate the value of s
+
+    return solve_value  # Return the complete list after the loop
 
 
-def assign_values_for_a_and_b (row, final_str_equation, i, a, b, p, q, r, s):
+def assign_values_for_a_and_b(row, final_str_equation, i, p, q, r, s):
+    a = [0] * row
+    b = [0] * row
+
+    # Assign values to `a` based on the previous character in the equation
     if final_str_equation[i - 1] == 'p':
-        for i in range(row):
-            a[i] = p[i]
+        for j in range(row):
+            a[j] = p[j]
     elif final_str_equation[i - 1] == 'q':
-        for i in range(row):
-            a[i] = q[i]
+        for j in range(row):
+            a[j] = q[j]
     elif final_str_equation[i - 1] == 'r':
-        for i in range(row):
-            a[i] = r[i]
+        for j in range(row):
+            a[j] = r[j]
     elif final_str_equation[i - 1] == 's':
-        for i in range(row):
-            a[i] = s[i]
+        for j in range(row):
+            a[j] = s[j]
 
+    # Assign values to `b` based on the next character in the equation
     if final_str_equation[i + 1] == 'p':
-        for i in range(row):
-            b[i] = p[i]
+        for j in range(row):
+            b[j] = p[j]
     elif final_str_equation[i + 1] == 'q':
-        for i in range(row):
-            b[i] = q[i]
+        for j in range(row):
+            b[j] = q[j]
     elif final_str_equation[i + 1] == 'r':
-        for i in range(row):
-            b[i] = r[i]
+        for j in range(row):
+            b[j] = r[j]
     elif final_str_equation[i + 1] == 's':
-        for i in range(row):
-            b[i] = s[i]
+        for j in range(row):
+            b[j] = s[j]
 
     return a, b
 
 
-def calculate_equation (row, string_length, final_str_equation, p, q, r, s):
+def calculate_equation(row, string_length, final_str_equation, p, q, r, s):
     i = 0
     a = [0] * row
     b = [0] * row
-    solve_value = 0
+    solve_value = []
+
     while i < string_length:
+        # Ensure 'i' is within the string's bounds to avoid IndexError
+        if i >= len(final_str_equation):
+            break
+        
+        # Handle 'AND' operation (^)
         if final_str_equation[i] == '^':
-            a, b = assign_values_for_a_and_b(final_str_equation, i, p, q, r, s)
+            a, b = assign_values_for_a_and_b(row, final_str_equation, i, p, q, r, s)
             solve_value = operator_and(row, a, b)
-            return solve_value
+        
+        # Handle 'OR' operation (v)
         elif final_str_equation[i] == 'v':
-            a, b = assign_values_for_a_and_b(final_str_equation, i, p, q, r, s)
+            a, b = assign_values_for_a_and_b(row, final_str_equation, i, p, q, r, s)
             solve_value = operator_or(row, a, b)
+        
+        # Handle 'NOT' operation (~)
         elif final_str_equation[i] == '~':
             solve_value = check_for_not_value(row, final_str_equation, i, p, q, r, s)
-            return solve_value
-        elif final_str_equation[i] == '=' and final_str_equation[i + 1] == '>':
-            a, b = assign_values_for_a_and_b(final_str_equation, i, p, q, r, s)
-            solve_value = operator_implies()
-        elif final_str_equation[i] == '<' and final_str_equation[i + 1] == '=' and final_str_equation[i + 2] == '>':
-            a, b = assign_values_for_a_and_b(final_str_equation, i, p, q, r, s)
-            solve_value = operator_equivalent()
+
+        # Handle 'IMPLIES' operation (=>), check if we have enough characters left in the string
+        elif final_str_equation[i] == '=' and (i + 1) < string_length and final_str_equation[i + 1] == '>':
+            a, b = assign_values_for_a_and_b(row, final_str_equation, i, p, q, r, s)
+            solve_value = operator_implies(row, a, b)
+            i += 1  # Skip '>'
+        
+        # Handle 'EQUIVALENT' operation (<=>), check if we have enough characters left in the string
+        elif final_str_equation[i] == '<' and (i + 2) < string_length and final_str_equation[i + 1] == '=' and final_str_equation[i + 2] == '>':
+            a, b = assign_values_for_a_and_b(row, final_str_equation, i, p, q, r, s)
+            solve_value = operator_equivalent(row, a, b)
+            i += 2  # Skip '=' and '>'
+
+        # Move to the next character
         i += 1
-    pass
+    
+    return solve_value
+
 
 
 def main ():
-    # integer
+    # >> Integer <<
     row = 0
     col = 0
     variable_used = 0
     count = 0
-    # string
+    # >> String <<
     str_equation = "(p and q) implies (r or s)"
+    # Translate the string
     final_str_equation = ""
+    # Temporary to store the priority
     temp_priority = ""
+    #                                               # For future implementation
+    #                                               extra = "abcdefghijklmnotuvwxyz"
+    # Filter of priority to solve
     priority_to_solve = []
-    extra = "abcdefghijklmnotuvwxyz"
+    # Rewrite the equation to be solved
+    priority_equation = []
+    # List of the final string matrix to be printed
     final_str_matrix = []
+    # Result of the equation to be stored in the list >> list is unknown for now
+    solve_value = [0] * row
+
+
     # array
     p = [0] * row
     q = [0] * row
@@ -326,7 +343,8 @@ def main ():
     variable_used, final_str_equation = translate(variable_used, string_length, str_equation, final_str_equation)
     # new length of the string  
     string_length = len(final_str_equation)
-    extra_length = len(extra)
+                                                    # For future implementation
+                                                    # extra_length = len(extra)
 
     # 
     #                                           Future Implementation
@@ -357,8 +375,20 @@ def main ():
             if temp_priority != "":
                 priority_to_solve.append(temp_priority)
             count += 1
-
-        
+        # calculate the equation
+        solve_value = calculate_equation(row, string_length, final_str_equation, p, q, r, s)
+        # checking if there is a priority to solve
+        if len(priority_to_solve) > 0:
+            for i in range(len(priority_to_solve)):
+                # calculate the equation
+                solve_value = calculate_equation(row, string_length, priority_to_solve[i], p, q, r, s)
+                # append the result to the list
+                final_str_matrix.append(solve_value)
+        else:
+            # calculate the equation
+            solve_value = calculate_equation(row, string_length, final_str_equation, p, q, r, s)
+            # append the result to the list
+            final_str_matrix.append(solve_value)
         # Debugger
         print("The string is: ", str_equation)
         print("Translated string: ", final_str_equation)
@@ -373,6 +403,7 @@ def main ():
         print("R: ", r)
         print("S: ", s)
         print("Priority: ", priority_to_solve)
+        print("Final String Matrix: ", final_str_matrix)
         # Debugger
 
 
