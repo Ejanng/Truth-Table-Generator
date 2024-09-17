@@ -774,7 +774,7 @@ int main () {
     int row, col;
     int n = 0;
     int finalIndex = 0;
-    char strStrange[] = "(p and q) implies  p";
+    char strStrange[] = "(p and q) or not r";
     char finalStr[max];
     int calculatedValue[max][max];
     char calculatedStr[max];

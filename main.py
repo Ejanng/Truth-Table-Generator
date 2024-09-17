@@ -186,7 +186,7 @@ def operator_or(row, a, b):
 def operator_implies(row, a, b):
     solve_value = [0] * row  # Initialize the result list with 0s
     for i in range(row):
-        solve_value[i] = (not a[i]) or b[i]  # Perform implies operation (not a or b)
+        solve_value[i] = int((not a[i]) or b[i])  # Perform implies operation (not a or b)
     return solve_value  # Return the list of results
 
 
@@ -215,16 +215,16 @@ def check_for_not_value(row, final_str_equation, i, p, q, r, s):
     # Check for the variable following 'not'
     if final_str_equation[i + 1] == 'p':
         for j in range(row):
-            solve_value[j] = not p[j]  # Negate the value of p
+            solve_value[j] = int(not p[j])  # Negate the value of p
     elif final_str_equation[i + 1] == 'q':
         for j in range(row):
-            solve_value[j] = not q[j]  # Negate the value of q
+            solve_value[j] = int(not q[j])  # Negate the value of q
     elif final_str_equation[i + 1] == 'r':
         for j in range(row):
-            solve_value[j] = not r[j]  # Negate the value of r
+            solve_value[j] = int(not r[j])  # Negate the value of r
     elif final_str_equation[i + 1] == 's':
         for j in range(row):
-            solve_value[j] = not s[j]  # Negate the value of s
+            solve_value[j] = int(not s[j])  # Negate the value of s
 
     return solve_value  # Return the complete list after the loop
 
@@ -326,7 +326,7 @@ def main ():
     variable_used = 0
     count = 0
     # >> String <<
-    str_equation = "p and q"
+    str_equation = "(p and q) implies (r or not s)"
     # Translate the string
     final_str_equation = ""
     # Temporary to store the priority
@@ -392,10 +392,8 @@ def main ():
             # append the result to the list
             solve_value = calculate_equation(row, string_length, final_str_equation, p, q, r, s)
         # after calculating the prioritize equation, the program compare of the indexes of priority_to_solve to final_str_equation and if it is the same, the program rewrite the same indexes of the final_str_equation and priority_equation with the value of the values_of_priority_equation and only start the rewriting if it occurs '(' and only stop the rewriting if it occurs a ')' until the len of the final_str_equation is reached
-        count = 0
-        
 
-        
+
         # Debugger
         print("The string is: ", str_equation)
         print("Translated string: ", final_str_equation)
@@ -412,7 +410,8 @@ def main ():
         print("Priority: ", priority_to_solve)
         print("Priority equation: ", priority_equation)
         print("Values of Priority to solve: ", values_of_priority_equation)
-        print("Solve Value: ", solve_value)
+        if len(priority_to_solve) < 0:
+            print("Solve Value: ", solve_value)
         # Debugger
 
 
