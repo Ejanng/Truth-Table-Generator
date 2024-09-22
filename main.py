@@ -1,3 +1,12 @@
+# Need to implement the following:
+# Negation is not yet fully implemented
+# Parenthesis is not yet fully implemented
+# Fix the bug in translating the equivalence
+# In calculating the complex equation, the equation inside of parenthesis is not yet fully implemented to be calculated
+# Implement the extra characters for the input string
+# Fix Implies operator giving wrong results
+
+ 
 import os
 import sys
 
@@ -298,19 +307,48 @@ def calculate_equation(row, string_length, final_str_equation, p, q, r, s):
 
 def calculate_complex_equation (row, string_length, final_str_equation, p, q, r, s):
     value = []
+    str_priority = []
     i = 0
 
     while i < string_length:
         if final_str_equation[i] == '(':
             j = i
             while final_str_equation[j] != ')':
+                if final_str_equation[j] == '(':
+                    i = j
                 j += 1
             solve_value, str_solve = calculate_equation(row, j - i, final_str_equation[i + 1:j], p, q, r, s)
             value.append(solve_value)
+            str_priority.append(str_solve)
             i = j
         i += 1 
-        print("Solve Value: ", value)
-    return value
+        print("Solve Value: ", solve_value)
+        print("String Value: ", str_priority)
+    return value, str_priority
+
+
+# logic to remove or calculate the parenthesis
+def detect_operator(row, string_length, final_str_equation, p, q, r, s):
+    i = 0
+    checker = 0
+    looper = 1
+    while 1:
+        for i in range(string_length):
+            if final_str_equation[i] == '(':
+                solve_value, str_solve = calculate_complex_equation(row, string_length, final_str_equation, p, q, r, s)
+                checker += 1
+                return solve_value, str_solve
+            
+        if checker == 0:
+            for i in range(string_length):
+                if final_str_equation[i] == '(' and checker == 0:
+                    checker += 1
+                
+                if checker == 0:
+                    solve_value, str_solve = calculate_equation(row, string_length, final_str_equation, p, q, r, s)
+                    return solve_value, str_solve
+            
+    return solve_value, str_solve
 
 
 def main ():
@@ -320,7 +358,7 @@ def main ():
     variable_used = 0
     count = 0
     # >> String <<
-    str_equation = "(p and (q and r)) or (p and (s and r))"
+    str_equation = "(p and (q and r))"
     # Translate the string
     final_str_equation = ""
     #                                               # For future implementation
@@ -358,7 +396,7 @@ def main ():
         # assign values to the variables
         p, q, r, s = assign_values(row, variable_used, p, q, r, s, matrix)
         # append the result to the list
-        solve_value = calculate_complex_equation(row, string_length, final_str_equation, p, q, r, s)
+        solve_value, str_priority = detect_operator(row, string_length, final_str_equation, p, q, r, s)
 
 
         # Debugger
@@ -375,6 +413,7 @@ def main ():
         print("R: ", r)
         print("S: ", s)
         print("Solve Value: ", solve_value)
+        print("String Value: ", str_priority)
         # Debugger
 
 
