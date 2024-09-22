@@ -197,20 +197,6 @@ def operator_equivalent(row, a, b):
     return solve_value  # Return the list of results
 
 
-def priority (final_str_equation, string_length, count):
-    temp_priority = ""
-    while count < string_length:
-        if final_str_equation[count] == '(':
-            while count < string_length:
-                temp_priority += final_str_equation[count]
-                if final_str_equation[count] == ')':
-                    return temp_priority, count
-                count += 1
-                if final_str_equation[count] == '(':
-                    continue
-        return temp_priority, count
-    
-    
 def check_for_not_value(row, final_str_equation, i, p, q, r, s):
     solve_value = [0] * row  # Initialize list with zeros of size `row`
     
@@ -271,6 +257,7 @@ def calculate_equation(row, string_length, final_str_equation, p, q, r, s):
     a = [0] * row
     b = [0] * row
     solve_value = []
+    str_solve = final_str_equation
 
     while i < string_length:
         # Ensure 'i' is within the string's bounds to avoid IndexError
@@ -306,84 +293,25 @@ def calculate_equation(row, string_length, final_str_equation, p, q, r, s):
         # Move to the next character
         i += 1
     
-    return solve_value
+    return solve_value, str_solve
 
 
-# def priority_equation_function(string_length, final_str_equation, values_of_priority_equation, count):
-#     final_equation = []
-#     while count < string_length:
-#         if final_str_equation[count] == '(':
-#             while count < string_length:
-#                 if final_str_equation[count] == ')':
-#                     final_equation.append(values_of_priority_equation)
-#                     return final_equation, count
-#                 count += 1
-#         count += 1
+def calculate_complex_equation (row, string_length, final_str_equation, p, q, r, s):
+    value = []
+    i = 0
 
+    while i < string_length:
+        if final_str_equation[i] == '(':
+            j = i
+            while final_str_equation[j] != ')':
+                j += 1
+            solve_value, str_solve = calculate_equation(row, j - i, final_str_equation[i + 1:j], p, q, r, s)
+            value.append(solve_value)
+            i = j
+        i += 1 
+        print("Solve Value: ", value)
+    return value
 
-def priority_calculation(row, priority_to_solve, p, q, r, s):
-    values_of_priority_equation = []
-    for i in range(len(priority_to_solve)):
-        temp_priority_to_solve = priority_to_solve[i]
-        string_length = len(temp_priority_to_solve)
-        temp_values_of_priority_equation = calculate_equation(row, string_length, temp_priority_to_solve, p, q, r, s)
-        values_of_priority_equation.append(temp_values_of_priority_equation)
-        # # Debugger
-        # print("Values of Priority to solve:::: ", temp_priority_to_solve)
-        # print("Values of Priority to solve:::: ", temp_values_of_priority_equation)
-        # # Debugger
-    return values_of_priority_equation
-
-
-def assign_new_priority_str__equation(row, priority_to_solve, final_str_equation, values_of_priority_equation, count):
-    priority_str_equation = []
-    while(1):
-        for i in range(len(final_str_equation)):
-            if final_str_equation[i - 1] == ')' and final_str_equation[i] == '^' and final_str_equation[i + 1] == '(':
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('^')
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == 'v' and final_str_equation[i + 1] == '(':
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('v')
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == '=' and final_str_equation[i + 1] == '>' and final_str_equation[i + 2] == '(':
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('=>')
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == '<' and final_str_equation[i + 1] == '=' and final_str_equation[i + 2] == '>' and final_str_equation[i + 3] == '(':
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('<=>')
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == '^' :
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('^')
-                priority_str_equation.append(final_str_equation[i + 1])
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == 'v' :
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('v')
-                priority_str_equation.append(final_str_equation[i + 1])
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == '=' and final_str_equation[i + 1] == '>':
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('=>')
-                priority_str_equation.append(final_str_equation[i + 2])
-            elif final_str_equation[i - 1] == ')' and final_str_equation[i] == '<' and final_str_equation[i + 1] == '=' and final_str_equation[i + 2] == '>':
-                priority_str_equation.append(values_of_priority_equation[count])
-                count += 1
-                priority_str_equation.append('<=>')
-                priority_str_equation.append(final_str_equation[i + 2])
-        return priority_str_equation
 
 def main ():
     # >> Integer <<
@@ -391,20 +319,13 @@ def main ():
     col = 0
     variable_used = 0
     count = 0
-    priority_count = 0
     # >> String <<
-    str_equation = "p and q"
+    str_equation = "(p and (q and r)) or (p and (s and r))"
     # Translate the string
     final_str_equation = ""
-    # Temporary to store the priority
-    temp_priority = ""
-    priority_str_equation = []
     #                                               # For future implementation
     #                                               extra = "abcdefghijklmnotuvwxyz"
-    # Filter of priority to solve
-    priority_to_solve = []
     # List of the final string matrix to be printed
-    values_of_priority_equation = []
     solve_value = []
     # array
     p = [0] * row
@@ -425,12 +346,6 @@ def main ():
     #                                           Future Implementation
     #                                           Check if the string is valid
     # 
-    # # Check if there is an extra variable
-    # for i in range(string_length):
-    #     for j in range(extra_length):
-    #         if str_equation[i] == extra[i]:
-    #             invalid_input()
-
     # check if the variable used is valid
     if variable_used < 0 or variable_used > 4:
         print("Invalid input");
@@ -442,21 +357,8 @@ def main ():
         matrix = fill_matrix_with_binary_count(row, col)
         # assign values to the variables
         p, q, r, s = assign_values(row, variable_used, p, q, r, s, matrix)
-        # list of priority to solve
-        while count < string_length:
-            # checking the priority of the equation
-            temp_priority, count = priority(final_str_equation, string_length, count)
-            # append the priority to the list
-            if temp_priority != "":
-                priority_to_solve.append(temp_priority)
-            count += 1
-        # checking if there is a priority to solve
-        if len(priority_to_solve) > 0:
-            # append the result to the list
-            values_of_priority_equation = priority_calculation(row, priority_to_solve, p, q, r, s)
-        else:
-            # append the result to the list
-            solve_value = calculate_equation(row, string_length, final_str_equation, p, q, r, s)
+        # append the result to the list
+        solve_value = calculate_complex_equation(row, string_length, final_str_equation, p, q, r, s)
 
 
         # Debugger
@@ -472,12 +374,9 @@ def main ():
         print("Q: ", q)
         print("R: ", r)
         print("S: ", s)
-        print("Priority: ", priority_to_solve)
-        print("Values of Priority to solve: ", values_of_priority_equation)
         print("Solve Value: ", solve_value)
         # Debugger
-        priority_str_equation = assign_new_priority_str__equation(row, priority_to_solve, final_str_equation, values_of_priority_equation, priority_count)
-        print("Priority String Equation: ", priority_str_equation)
+
 
 # Run the main function
 if __name__ == "__main__":
