@@ -141,7 +141,6 @@ def fill_matrix_with_binary_count(row, col):
     return matrix
 
 
-
 def assign_values_to_variables(row, matrix, y):
     x = [0] * row
 
@@ -152,30 +151,15 @@ def assign_values_to_variables(row, matrix, y):
     
 
 def assign_values(row, variable_used, p, q, r, s, matrix):
+    variables = [p, q, r, s]  # Create a list to store variables
     y = 0
 
-    if variable_used == 1:
-        p = assign_values_to_variables(row, matrix, y)
-    elif variable_used == 2:
-        p = assign_values_to_variables(row, matrix, y)
+    for i in range(variable_used):
+        variables[i] = assign_values_to_variables(row, matrix, y)
         y += 1
-        q = assign_values_to_variables(row, matrix, y)
-    elif variable_used == 3:
-        p = assign_values_to_variables(row, matrix, y)
-        y += 1
-        q = assign_values_to_variables(row, matrix, y)
-        y += 1
-        r = assign_values_to_variables(row, matrix, y)
-    elif variable_used == 4:
-        p = assign_values_to_variables(row, matrix, y)
-        y += 1
-        q = assign_values_to_variables(row, matrix, y)
-        y += 1
-        r = assign_values_to_variables(row, matrix, y)
-        y += 1
-        s = assign_values_to_variables(row, matrix, y)
 
-    return p, q, r, s
+    # Return the updated variables, unpacking the list
+    return variables[0], variables[1], variables[2], variables[3]
 
 
 def operator_and(row, a, b):
@@ -195,8 +179,8 @@ def operator_or(row, a, b):
 def operator_implies(row, a, b):
     solve_value = [0] * row  # Initialize the result list with 0s
     for i in range(row):
-        solve_value[i] = int((not a[i]) or b[i])  # Perform implies operation (not a or b)
-    return solve_value  # Return the list of results
+        solve_value[i] = int((not a[i]) or b[i])  # Logical implication (not a or b)
+    return solve_value
 
 
 def operator_equivalent(row, a, b):
@@ -227,36 +211,29 @@ def check_for_not_value(row, final_str_equation, i, p, q, r, s):
 
 
 def assign_values_for_a_and_b(row, final_str_equation, i, p, q, r, s):
-    a = [0] * row
-    b = [0] * row
-
-    # Assign values to `a` based on the previous character in the equation
-    if final_str_equation[i - 1] == 'p':
-        for j in range(row):
-            a[j] = p[j]
-    elif final_str_equation[i - 1] == 'q':
-        for j in range(row):
-            a[j] = q[j]
-    elif final_str_equation[i - 1] == 'r':
-        for j in range(row):
-            a[j] = r[j]
-    elif final_str_equation[i - 1] == 's':
-        for j in range(row):
-            a[j] = s[j]
-
-    # Assign values to `b` based on the next character in the equation
-    if final_str_equation[i + 1] == 'p':
-        for j in range(row):
-            b[j] = p[j]
-    elif final_str_equation[i + 1] == 'q':
-        for j in range(row):
-            b[j] = q[j]
-    elif final_str_equation[i + 1] == 'r':
-        for j in range(row):
-            b[j] = r[j]
-    elif final_str_equation[i + 1] == 's':
-        for j in range(row):
-            b[j] = s[j]
+    def assign_values(char):
+        if char == 'p':
+            return p
+        elif char == 'q':
+            return q
+        elif char == 'r':
+            return r
+        elif char == 's':
+            return s
+        return [0] * row  # Default case if no match
+    
+    a = assign_values(final_str_equation[i - 1])  # Assign values based on the previous character
+    b = [0] * row  # Initialize `b` with 0s
+    
+    # Check the next character and assign values to `b`
+    if i + 1 < len(final_str_equation):
+        b = assign_values(final_str_equation[i + 1])
+    
+    # Handle other cases based on additional characters (for implies/equivalent)
+    if i + 2 < len(final_str_equation):
+        b = assign_values(final_str_equation[i + 2])
+    if i + 3 < len(final_str_equation):
+        b = assign_values(final_str_equation[i + 3])
 
     return a, b
 
@@ -358,7 +335,7 @@ def main ():
     variable_used = 0
     count = 0
     # >> String <<
-    str_equation = "(p and (q and r))"
+    str_equation = "(p and q) implies r"
     # Translate the string
     final_str_equation = ""
     #                                               # For future implementation
