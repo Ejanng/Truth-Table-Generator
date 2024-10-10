@@ -183,20 +183,18 @@ def check_for_not_value(row, translated_string_equation, i, p, q, r, s):
 def store_values_inside_the_array(translated_string_equation, solve_value, string_solve, p, q, r, s):
     i = 0  # Index for traversing the string
     j = 0  # Index for traversing the solve_value list
-    if len(string_solve) > 0:
-        j = len(string_solve) - 1  # Start from the last solve value
     temp_string_equation = []  # Temp list to hold solved values and operators
 
     while i < len(translated_string_equation):
         if len(solve_value) > 0:
-            # Traverse string_solve from right to left to prioritize innermost expressions first
+            j = len(string_solve) - 1
             i += 1
             while j > 0:
                 # Check if the substring matches the current solve string in reverse order
-                if translated_string_equation[i+1:i+1+len(string_solve[j])] == string_solve[j]:
+                if translated_string_equation[i:i+2] == string_solve[j]:
                     temp_string_equation.append(solve_value[j])  # Append precomputed solution
                     i += len(string_solve[j]) + 2  # Skip the processed part and the '(' and the ')'
-                    j -= 1  # Move to the previous solve value (in reverse)
+                    j -= 1  # Move to the previous solve value (in reverse  )
                     break  # Exit the loop once a match is found
                 else:
                     j -= 1  # Keep moving left in string_solve if no match found
@@ -249,42 +247,42 @@ def assign_values_for_a_and_b(final_sring_equation, i):
     return a, b
 
 
-def calculate_equation(row, string_length, translated_string_equation):
+def calculate_equation(row, string_length, value_of_the_equation):
     i = 0
     a = [0] * row
     b = [0] * row
     solve_value = []
-    string_solve = translated_string_equation
+    string_solve = value_of_the_equation
 
     while i < string_length:
         
         # Ensure 'i' is within the string's bounds to avoid IndexError
-        if i >= len(translated_string_equation):
+        if i >= len(value_of_the_equation):
             break
         
         # Handle 'AND' operation (^)
-        if translated_string_equation[i] == '^':
-            a, b = assign_values_for_a_and_b(translated_string_equation, i)
+        if value_of_the_equation[i] == '^':
+            a, b = assign_values_for_a_and_b(value_of_the_equation, i)
             solve_value = operator_and(row, a, b)
         
         # Handle 'OR' operation (v)
-        elif translated_string_equation[i] == 'v':
-            a, b = assign_values_for_a_and_b(translated_string_equation, i)
+        elif value_of_the_equation[i] == 'v':
+            a, b = assign_values_for_a_and_b(value_of_the_equation, i)
             solve_value = operator_or(row, a, b)
         
         # Handle 'NOT' operation (~)
-        elif translated_string_equation[i] == '~':
-            solve_value = check_for_not_value(translated_string_equation, i)
+        elif value_of_the_equation[i] == '~':
+            solve_value = check_for_not_value(value_of_the_equation, i)
 
         # Handle 'IMPLIES' operation (=>), check if we have enough characters left in the string
-        elif translated_string_equation[i] == '=>' and (i + 1) < string_length:
-            a, b = assign_values_for_a_and_b(translated_string_equation, i)
+        elif value_of_the_equation[i] == '=>' and (i + 1) < string_length:
+            a, b = assign_values_for_a_and_b(value_of_the_equation, i)
             solve_value = operator_implies(row, a, b)
             i += 1  # Skip '>'
         
         # Handle 'EQUIVALENT' operation (<=>), check if we have enough characters left in the string
-        elif translated_string_equation[i] == '<=>' and (i + 2) < string_length:
-            a, b = assign_values_for_a_and_b(translated_string_equation, i)
+        elif value_of_the_equation[i] == '<=>' and (i + 2) < string_length:
+            a, b = assign_values_for_a_and_b(value_of_the_equation, i)
             solve_value = operator_equivalent(row, a, b)
             i += 2  # Skip '=' and '>'
 
@@ -300,8 +298,10 @@ def calculate_complex_equation (row, translated_string_equation, value_of_the_eq
     string_length = len(value_of_the_equation)
     while 1:
         i = 0
+        if len(value_of_the_equation) == 1:
+            return solve_value, string_solve
         if len(string_solve) > 0:
-            value_of_the_equation = store_values_inside_the_array(translated_string_equation, solve_value, string_solve, p, q, r, s)
+            value_of_the_equation = store_values_inside_the_array(value_of_the_equation, solve_value, string_solve, p, q, r, s)
             string_length = len(value_of_the_equation)
         while i < string_length:
             if value_of_the_equation[i] == '(':
@@ -319,8 +319,6 @@ def calculate_complex_equation (row, translated_string_equation, value_of_the_eq
                 solve_value.append(value)
                 string_solve.append(str_priority)
             i += 1
-        if len(value_of_the_equation) == 1:
-            return solve_value, string_solve
 
 
 def main ():
