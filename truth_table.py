@@ -318,8 +318,6 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                 result.append(item)
                 seen.add(item)
         return result
-    # if len(integer_equation) > 0:
-    #     solve_value.append(integer_equation)
 
     while 1:
         string_length = len(integer_equation)
@@ -327,14 +325,14 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
         while i < string_length:
             l = i
             found_open_parenthesis = False  # Flag to track if we found '('
-            while n < string_length:
+            while n < string_length + 1:
                 if string_equation[n] == '~':
                     value = solve_value_for_not.pop(0)
                     solve_value.append(value)
                     temp_string_equation.append(value)
                     value = reset
-                    string_priority.append(string_equation[n])
-                n += 2
+                    string_priority.append(string_equation[n] + string_equation[n+1])
+                n += 1
             while string_equation[l] != ')':
                 if l >= len(string_equation) - 1:
                     break
@@ -426,13 +424,8 @@ def display_truth_table(propositions, translated_string, value_equation, solve_v
         # Add the corresponding intermediate values (from solve_value)
         intermediate_values = [str(solve[i]).ljust(col_widths[-2]) for solve in solve_value]
 
-        # Add the final result of the equation
-
-        # final_value = str(value_equation[0][i]).ljust(col_widths[-1])
-
         # Combine all row values
         row_values.extend(intermediate_values)
-        # row_values.append(final_value)
 
         # Print the aligned row
         print(" | ".join(row_values))
@@ -442,7 +435,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(p and q) implies (not r or s)"
+    string_equation = "(not p and not q) implies r"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
@@ -486,7 +479,6 @@ def main ():
     # print("Solve value: ", solve_value)
     # print("String Solve: ", string_priority)
     # print("Value of the equation: ", value_of_the_equation)
-    
     # Debugger
 
 
