@@ -548,29 +548,32 @@ def display_truth_table(propositions, translated_string, value_equation, solve_v
 
     # Prepare the header including the intermediate steps and the final equation
     header = prop_names + (string_solve if string_solve else ['']) + [translated_string]
-    header_str = " | ".join(header)
+
+    # Set fixed widths for headers and values (adjust the widths as needed)
+    fixed_width = 10  # Fixed width for each column
+    # final_equation_width = 15  # Width for the final equation column
+
+    # Prepare the header string with fixed widths
+    header_str = " | ".join(name.ljust(fixed_width) for name in header)
     print("-" * len(header_str))
     print(header_str)
     print("-" * len(header_str))  # Separator line
 
-    # Calculate maximum length for each column for alignment
-    col_widths = [max(len(str(val)) for val in col) for col in zip(*prop_values)]
-    max_string_solve_length = max(len(s) for s in string_solve) if string_solve else len('None')
-    col_widths.append(max_string_solve_length)  # Width for string_solve
-    col_widths.append(15)  # Width for Final Equation
-
     # Display each row of values, including the intermediate and final values
     for i in range(num_rows):
         # Gather the truth values for the propositions in the current row
-        row_values = [str(prop[i]).ljust(col_widths[j]) for j, prop in enumerate(prop_values)]
+        row_values = [str(prop[i]).ljust(fixed_width) for prop in prop_values]
 
         # Add the corresponding intermediate values (from solve_value)
-        intermediate_values = [str(solve[i]).ljust(col_widths[-2]) for solve in solve_value]
+        intermediate_values = [str(solve[i]).ljust(fixed_width) for solve in solve_value]
 
-        # Combine all row values
+        # Combine all row values and pad the final equation column with fixed width
         row_values.extend(intermediate_values)
 
-        # Print the aligned row
+        # # Add padding for the final equation column
+        # row_values.append(translated_string.ljust(final_equation_width))
+
+        # Print the aligned row with fixed-width columns
         print(" | ".join(row_values))
 
 
