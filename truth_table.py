@@ -441,7 +441,7 @@ def calculate_equation(row, string_length, integer_equation):
     return solve_value
 
 
-def calculate_complex_equation (row, string_equation, integer_equation, solve_value_for_not):
+def calculate_complex_equation (row, string_equation, integer_equation, solve_value_for_not, not_length):
     solve_value = []
     string_priority = []
     k = 0
@@ -501,8 +501,9 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     j += 1
                 value = calculate_equation(row, j - i, integer_equation[i + 1:j])
                 solve_value.append(value)
-                if len(temp_string_equation) <= 1: # compare to counted not values
+                if not_length: # compare to counted not values
                     temp_string_equation = []
+                    not_length = 0
                 temp_string_equation.append(value)
                 value = []
                 if operator:
@@ -579,7 +580,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(p and not q) or (p and r)"
+    string_equation = "(p and not q) or (not p and r)"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
@@ -599,13 +600,14 @@ def main ():
     propositions = {'P': p, 'Q': q, 'R': r, 'S': s}
     # create a array with stored values
     integer_equation, string_equation, solve_value_for_not = store_values_inside_the_array(row, translated_string_equation, p, q, r, s)
+    not_length = len(solve_value_for_not)
     # check if the equation is valid
     rewritten_string_equation, rewritten_integer_equation = is_equation_valid(integer_equation, string_equation)
     if rewritten_string_equation:
         integer_equation = rewritten_integer_equation
         string_equation = rewritten_string_equation
     # calculate the equation
-    solve_value, string_priority, value_of_the_equation = calculate_complex_equation(row, string_equation, integer_equation, solve_value_for_not)
+    solve_value, string_priority, value_of_the_equation = calculate_complex_equation(row, string_equation, integer_equation, solve_value_for_not, not_length)
     display_truth_table(propositions, translated_string_equation, value_of_the_equation, solve_value, string_priority)
 
 
