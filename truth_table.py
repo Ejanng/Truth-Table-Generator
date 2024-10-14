@@ -20,52 +20,65 @@ def translate(variable_used, string_equation, translated_string_equation):
                 variable_used += 1
                 countP += 1
             translated_string_equation += 'p'
+            i += 1
         elif string_equation[i] == 'q' and string_equation[i - 1] != 'e':
             translations.append(("q", "q"))
             if countQ == 0:
                 variable_used += 1
                 countQ += 1
             translated_string_equation += 'q'
+            i += 1
         elif string_equation[i] == 'r':
             translations.append(("r", "r"))
             if countR == 0:
                 variable_used += 1
                 countR += 1
             translated_string_equation += 'r'
+            i += 1
         elif string_equation[i] == 's':
             translations.append(("s", "s"))
             if countS == 0:
                 variable_used += 1
                 countS += 1
             translated_string_equation += 's'
+            i += 1
         # Check the operator of the string
         elif string_equation[i] == '(':
             translations.append(("(", "("))
             translated_string_equation += '('
+            i += 1
         elif string_equation[i] == ')':
             translations.append((")", ")"))
             translated_string_equation += ')'
+            i += 1
         elif string_equation[i:i+3] == 'and':
             translations.append(("and", "^"))
-            i += 2
+            i += 3
             translated_string_equation += '^'
         elif string_equation[i:i+2] == 'or':
             translations.append(("or", "v"))
-            i += 1
+            i += 2
             translated_string_equation += 'v'
         elif string_equation[i:i+3] == 'not':
             translations.append(("not", "~"))
-            i += 2
+            i += 3
             translated_string_equation += '~'
         elif string_equation[i:i+7] == 'implies':
             translations.append(("implies", "=>"))
-            i += 6
+            i += 7
             translated_string_equation += '=>'
         elif string_equation[i:i+10] == 'equivalent':
             translations.append(("equivalent", "<=>"))
-            i += 9
+            i += 10
             translated_string_equation += '<=>'
-        i += 1
+        elif string_equation[i] == ' ':
+            i += 1
+        else:
+            os.system('cls')
+            print("Error: Unregistered character detected.")
+            print("Error: Invalid character detected: ", string_equation)
+            print("Note: Must be p, q, r, s, and, or, not, implies, equivalent only!")
+            sys.exit(1)
     # Printing the table header
     print(f"{'Symbol':<15} | {'Translation':<15}")
     print('-' * 35)  # Separator line
@@ -78,10 +91,123 @@ def translate(variable_used, string_equation, translated_string_equation):
     return variable_used, translated_string_equation
 
 
+def is_equation_valid(integer_equation, string_equation):
+    i = 1
+    operator = ['^', 'v', '=>', '<=>']
+    operators = ['^', 'v', '=>', '<=>', 'p', 'q', 'r', 's']
+    # Check if the equation is valid catch(var op var op var)
+    while i < len(integer_equation):
+        if i > len(integer_equation) - 3:
+            break
+        for j in range(len(operator)):
+            for k in range(len(operator)):
+                if integer_equation[i] == operator[j] and integer_equation[i+2] == operator[k]:
+                    os.system('cls')
+                    print("Error: Invalid equation detected.")
+                    print("Error: e.g. 'var op var op var'.")
+                    print("Note: Must be valid equation only!")
+                    print("Note: e.g. 'var op var', '(var op var) op var', etc.")
+                    sys.exit(1)
+                k += 1
+            j += 1
+        i += 1
+    i = 0
+
+    # catch('(var op var') , no closing bracket
+    stack = []  # To track opening parentheses
+    for i in range(len(integer_equation)):
+        # Push opening parenthesis onto the stack
+        if integer_equation[i] == '(':
+            stack.append(i)
+        # When we encounter a closing parenthesis
+        elif integer_equation[i] == ')':
+            if len(stack) == 0:  # No matching opening parenthesis
+                os.system('cls')
+                print("Error: Invalid equation detected.")
+                print("Error: No matching opening bracket for closing bracket at index:", i)
+                print("Note: Must be valid equation only!")
+                print("Note: e.g. (var op var), etc")
+                sys.exit(1)
+            else:
+                stack.pop()  # Match found, pop the corresponding '('
+    # If there are unmatched opening parentheses left
+    if len(stack) > 0:
+        os.system('cls')
+        print("Error: Invalid equation detected.")
+        print(f"Error: No closing bracket for opening bracket at index: {stack[-1]}")
+        print("Note: Must be valid equation only!")
+        print("Note: e.g. (var op var), etc")
+        sys.exit(1)
+
+    # catch ((var op var), double opening bracket'
+    i = 0
+    while i < len(integer_equation):
+        if i >= len(integer_equation) - 1:
+            break
+        if integer_equation[i] == '(' and integer_equation[i+1] == '(':
+            os.system('cls')
+            print("Error: Invalid equation detected.")
+            print("Error: Invalid use of opening brackets.")
+            print("Note: Must be valid equation only!")
+            print("Note: e.g. (var op var), etc")
+            sys.exit(1)
+        i += 1
+
+    # catch (var op var), rewrite the equation to 'var op var'
+    rewritten_integer_equation = []
+    rewritten_string_equation = []
+    i = 0
+    if len(integer_equation) == 5 and integer_equation[0] == '(' and integer_equation[4] == ')':
+        while i < len(integer_equation):
+            # If an opening parenthesis is found
+            if integer_equation[i] == '(':
+                i += 1  # Move to the next item after '('
+                j = i
+                # Collect everything inside the parentheses
+                while i < len(integer_equation) and integer_equation[i] != ')':
+                    rewritten_integer_equation.append(integer_equation[i])
+                    i += 1
+                while j < len (string_equation) and string_equation[j] != ')':
+                    rewritten_string_equation.append(string_equation[j])
+                    j += 1
+            i += 1
+        if len(rewritten_integer_equation) > 0:
+            return rewritten_string_equation, rewritten_integer_equation
+        
+    # catch (var op var) var, no operator after closing bracket
+    i = 0
+    while i < len(integer_equation):
+        if i >= len(integer_equation) - 1:
+            break
+        if integer_equation[i] == ')' and integer_equation[i+1] not in ['^', 'v', '=>', '<=>']:
+            os.system('cls')
+            print("Error: Invalid equation detected.")
+            print("Error: No operator after closing bracket.")
+            print("Note: Must be valid equation only!")
+            print("Note: e.g. (var op var), etc")
+            sys.exit(1)
+        i += 1
+
+    # catch var op var), no opening bracket
+    i = 0
+    while i < len(integer_equation):
+        # Check if the current item is an operator and the next item is an opening parenthesis
+        if integer_equation[i] in operators and integer_equation[i + 1] == '(' and integer_equation[i - 1] !=')':
+            os.system('cls')
+            print("Error: Invalid equation detected.")
+            print("Error: Invalid use of operator followed by a parenthesis.")
+            print("Note: Must be valid equation only! (e.g. p and (q or r))")
+            sys.exit(1)
+        i += 1
+    return 0, 0
+
+            
 def calculate_dimensions(variable_used, row, col):
-    if variable_used == 1:
-        row = 0
-        col = 0
+    if variable_used < 1:
+        os.system('cls')
+        print("Error: There is no variable used!.")
+        print("Note: Variable must be p, q, r, s only!")
+        sys.exit(1)
     else:
         holder = 2
         power = 0
@@ -141,6 +267,16 @@ def assign_values(row, variable_used, p, q, r, s, matrix):
     return variables[0], variables[1], variables[2], variables[3]
 
 
+def remove_duplicates(array):
+    seen = set()
+    result = []
+    for item in array:
+        if item not in seen:
+            result.append(item)
+            seen.add(item)
+    return result
+
+
 def operator_and(row, a, b):
     solve_value = [0] * row
     for i in range(row):
@@ -180,7 +316,6 @@ def store_values_inside_the_array(row, translated_string_equation, p, q, r, s):
     integer_equation = []  # Temp list to hold solved values and operators
     string_equation = []
     solve_value_for_not = []
-
     while i < len(translated_string_equation):
         # Check for opening parenthesis '('
         if translated_string_equation[i] == '(':
@@ -221,6 +356,13 @@ def store_values_inside_the_array(row, translated_string_equation, p, q, r, s):
             string_equation.append('v')
             i += 1
         elif translated_string_equation[i] == '~' and translated_string_equation[i+1] != '(':
+            if translated_string_equation[i+1] not in ['p', 'q', 'r', 's']:
+                os.system('cls')
+                print("Translated string: ", translated_string_equation)
+                print("Error: Invalid use of 'not' operator.")
+                print("Error: (not + operator) or (not + unregistered variable.)")
+                print("Note: Must be not + variable. (e.g. not p, not q, not r, not s)")
+                sys.exit(1)
             string_value = translated_string_equation[i+1]
             if string_value == 'p':
                 solve_not_value = operator_not(row, p)
@@ -266,7 +408,7 @@ def calculate_equation(row, string_length, integer_equation):
     b = [0] * row
     solve_value = []
 
-    while i < string_length:
+    while i < string_length - 1:
         
         # Ensure 'i' is within the string's bounds to avoid IndexError
         if i >= len(integer_equation):
@@ -283,13 +425,13 @@ def calculate_equation(row, string_length, integer_equation):
             solve_value = operator_or(row, a, b)
 
         # Handle 'IMPLIES' operation (=>), check if we have enough characters left in the string
-        elif integer_equation[i] == '=>' and (i + 1) < string_length:
+        elif integer_equation[i] == '=>':
             a, b = assign_values_for_a_and_b(integer_equation, i)
             solve_value = operator_implies(row, a, b)
             i += 1  # Skip '>'
         
         # Handle 'EQUIVALENT' operation (<=>), check if we have enough characters left in the string
-        elif integer_equation[i] == '<=>' and (i + 2) < string_length:
+        elif integer_equation[i] == '<=>':
             a, b = assign_values_for_a_and_b(integer_equation, i)
             solve_value = operator_equivalent(row, a, b)
             i += 2  # Skip '=' and '>'
@@ -309,16 +451,6 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
     operator = []
     temp_string_equation = []
     single_equation = []
-    reset = []
-    def remove_duplicates(array):
-        seen = set()
-        result = []
-        for item in array:
-            if item not in seen:
-                result.append(item)
-                seen.add(item)
-        return result
-
     while 1:
         string_length = len(integer_equation)
         i = 0
@@ -326,11 +458,13 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
             l = i
             found_open_parenthesis = False  # Flag to track if we found '('
             while n < string_length + 1:
+                if n >= len(string_equation) - 1:
+                    break
                 if string_equation[n] == '~':
                     value = solve_value_for_not.pop(0)
                     solve_value.append(value)
                     temp_string_equation.append(value)
-                    value = reset
+                    value = []
                     string_priority.append(string_equation[n] + string_equation[n+1])
                 n += 1
             while string_equation[l] != ')':
@@ -345,7 +479,7 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
             cleaned_array = [x for x in string_priority if x]
             string_priority = cleaned_array
             string_priority = [tuple(x) if isinstance(x, list) else x for x in string_priority]
-            unique_values = remove_duplicates(string_priority)
+            unique_string = remove_duplicates(string_priority)
             # Check for the operator
             while k < string_length - 1:
                 if integer_equation[k] == ')':
@@ -367,9 +501,8 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     j += 1
                 value = calculate_equation(row, j - i, integer_equation[i + 1:j])
                 solve_value.append(value)
-                temp_string_equation = reset
                 temp_string_equation.append(value)
-                value = reset
+                value = []
                 if operator:
                     temp_string_equation.append(operator.pop(0))
                 if single_equation:
@@ -378,11 +511,19 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
             if len(integer_equation) == 3:
                 value = calculate_equation(row, string_length, integer_equation)
                 solve_value.append(value)
-                temp_string_equation = reset
+                if len(temp_string_equation) > 1:
+                    temp_string_equation.pop(0)
                 temp_string_equation.append(value)
-                value = reset
+                value = []
                 integer_equation = temp_string_equation
-                string_priority = [' '.join(item) for item in unique_values]
+                solve_value = [tuple(x) if isinstance(x, list) else x for x in solve_value]
+                unique_value = solve_value
+                string_priority = [' '.join(item) for item in unique_string]
+                for i in range(len(string_priority)):
+                    for j in range(len(string_priority)):
+                        if string_priority[i] == string_priority[j] and i != j:
+                            unique_value = remove_duplicates(solve_value)
+                solve_value = unique_value
                 return solve_value, string_priority, integer_equation
             i += 1
         integer_equation = temp_string_equation
@@ -407,6 +548,7 @@ def display_truth_table(propositions, translated_string, value_equation, solve_v
     # Prepare the header including the intermediate steps and the final equation
     header = prop_names + (string_solve if string_solve else ['']) + [translated_string]
     header_str = " | ".join(header)
+    print("-" * len(header_str))
     print(header_str)
     print("-" * len(header_str))  # Separator line
 
@@ -435,7 +577,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(not p and not q) implies r"
+    string_equation = "(not q and p)"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
@@ -455,6 +597,11 @@ def main ():
     propositions = {'P': p, 'Q': q, 'R': r, 'S': s}
     # create a array with stored values
     integer_equation, string_equation, solve_value_for_not = store_values_inside_the_array(row, translated_string_equation, p, q, r, s)
+    # check if the equation is valid
+    rewritten_string_equation, rewritten_integer_equation = is_equation_valid(integer_equation, string_equation)
+    if rewritten_string_equation:
+        integer_equation = rewritten_integer_equation
+        string_equation = rewritten_string_equation
     # calculate the equation
     solve_value, string_priority, value_of_the_equation = calculate_complex_equation(row, string_equation, integer_equation, solve_value_for_not)
     display_truth_table(propositions, translated_string_equation, value_of_the_equation, solve_value, string_priority)
