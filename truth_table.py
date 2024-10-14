@@ -98,6 +98,8 @@ def is_equation_valid(integer_equation, string_equation):
     # Check if the equation is valid catch(var op var op var)
     for j in range(len(operator)):
         for k in range(len(operator)):
+            if i >= len(integer_equation) - 2:
+                break
             if integer_equation[i] == operator[j] and integer_equation[i+2] == operator[k]:
                 os.system('cls')
                 print("Error: Invalid equation detected.")
@@ -473,7 +475,7 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     l += 1
                 l += 1
                 if found_open_parenthesis and o + 1 < l:  # Ensure there is something to append
-                    string_priority.append(string_equation[o + 1:l])
+                    string_priority.append(string_equation[o + 1:l-1])
             cleaned_array = [x for x in string_priority if x]
             string_priority = cleaned_array
             string_priority = [tuple(x) if isinstance(x, list) else x for x in string_priority]
@@ -581,7 +583,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(not p and not q) or (not s and not r)"
+    string_equation = "(not p and not q) implies (not r equivalent not s)"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
