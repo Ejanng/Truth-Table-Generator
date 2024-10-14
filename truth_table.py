@@ -472,10 +472,10 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     break
                 if string_equation[l] == '(':
                     found_open_parenthesis = True  # Set the flag when '(' is found
-                    i = l
+                    o = l
                 l += 1
-            if found_open_parenthesis and i + 1 < l:  # Ensure there is something to append
-                string_priority.append(string_equation[i + 1:l])
+            if found_open_parenthesis and o + 1 < l:  # Ensure there is something to append
+                string_priority.append(string_equation[o + 1:l])
             cleaned_array = [x for x in string_priority if x]
             string_priority = cleaned_array
             string_priority = [tuple(x) if isinstance(x, list) else x for x in string_priority]
@@ -501,6 +501,8 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     j += 1
                 value = calculate_equation(row, j - i, integer_equation[i + 1:j])
                 solve_value.append(value)
+                if len(temp_string_equation) <= 1:
+                    temp_string_equation = []
                 temp_string_equation.append(value)
                 value = []
                 if operator:
@@ -577,7 +579,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(not q and p)"
+    string_equation = "(not q and p) implies not r"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
