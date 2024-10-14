@@ -501,7 +501,7 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     j += 1
                 value = calculate_equation(row, j - i, integer_equation[i + 1:j])
                 solve_value.append(value)
-                if len(temp_string_equation) <= 1:
+                if len(temp_string_equation) <= 1: # compare to counted not values
                     temp_string_equation = []
                 temp_string_equation.append(value)
                 value = []
@@ -579,7 +579,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(not q and p) implies not r"
+    string_equation = "(p and not q) or (p and r)"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
