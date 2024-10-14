@@ -96,22 +96,15 @@ def is_equation_valid(integer_equation, string_equation):
     operator = ['^', 'v', '=>', '<=>']
     operators = ['^', 'v', '=>', '<=>', 'p', 'q', 'r', 's']
     # Check if the equation is valid catch(var op var op var)
-    while i < len(integer_equation):
-        if i > len(integer_equation) - 3:
-            break
-        for j in range(len(operator)):
-            for k in range(len(operator)):
-                if integer_equation[i] == operator[j] and integer_equation[i+2] == operator[k]:
-                    os.system('cls')
-                    print("Error: Invalid equation detected.")
-                    print("Error: e.g. 'var op var op var'.")
-                    print("Note: Must be valid equation only!")
-                    print("Note: e.g. 'var op var', '(var op var) op var', etc.")
-                    sys.exit(1)
-                k += 1
-            j += 1
-        i += 1
-    i = 0
+    for j in range(len(operator)):
+        for k in range(len(operator)):
+            if integer_equation[i] == operator[j] and integer_equation[i+2] == operator[k]:
+                os.system('cls')
+                print("Error: Invalid equation detected.")
+                print("Error: e.g. 'var op var op var'.")
+                print("Note: Must be valid equation only!")
+                print("Note: e.g. 'var op var', '(var op var) op var', etc.")
+                sys.exit(1)
 
     # catch('(var op var') , no closing bracket
     stack = []  # To track opening parentheses
@@ -457,7 +450,7 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
         while i < string_length:
             l = i
             found_open_parenthesis = False  # Flag to track if we found '('
-            while n < string_length + 1:
+            while n < len(string_equation):
                 if n >= len(string_equation) - 1:
                     break
                 if string_equation[n] == '~':
@@ -467,15 +460,20 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                     value = []
                     string_priority.append(string_equation[n] + string_equation[n+1])
                 n += 1
-            while string_equation[l] != ')':
+            for t in range(len(string_equation)):
+                found_open_parenthesis = False  # Reset the flag
                 if l >= len(string_equation) - 1:
                     break
-                if string_equation[l] == '(':
-                    found_open_parenthesis = True  # Set the flag when '(' is found
-                    o = l
+                while string_equation[l] != ')':
+                    if l >= len(string_equation) - 1:
+                        break
+                    if string_equation[l] == '(':
+                        found_open_parenthesis = True  # Set the flag when '(' is found
+                        o = l
+                    l += 1
                 l += 1
-            if found_open_parenthesis and o + 1 < l:  # Ensure there is something to append
-                string_priority.append(string_equation[o + 1:l])
+                if found_open_parenthesis and o + 1 < l:  # Ensure there is something to append
+                    string_priority.append(string_equation[o + 1:l])
             cleaned_array = [x for x in string_priority if x]
             string_priority = cleaned_array
             string_priority = [tuple(x) if isinstance(x, list) else x for x in string_priority]
@@ -503,7 +501,7 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                 solve_value.append(value)
                 if not_length: # compare to counted not values
                     temp_string_equation = []
-                    not_length = 0
+                    not_length = 0 
                 temp_string_equation.append(value)
                 value = []
                 if operator:
@@ -580,7 +578,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(p and not q) or (not p and r)"
+    string_equation = "(not p and not q) or (not s and not r)"
     translated_string_equation = ""
     solve_value = []
     string_priority = []
