@@ -194,6 +194,18 @@ def is_equation_valid(integer_equation, string_equation):
             print("Note: Must be valid equation only! (e.g. p and (q or r))")
             sys.exit(1)
         i += 1
+
+    # catch var var
+    i = 0
+    for i in range(len(integer_equation)):
+        if i >= len(integer_equation) - 1:
+            break
+        if integer_equation[i] not in ['^', 'v', '=>', '<=>'] and integer_equation[i+1] not in ['^', 'v', '=>', '<=>', ')']:
+            os.system('cls')
+            print("Error: Invalid equation detected.")
+            print("Error: Invalid use of variables.")
+            print("Note: Must be valid equation only! (e.g. p and (q or r))")
+            sys.exit(1)
     return 0, 0
 
             
@@ -528,6 +540,10 @@ def calculate_complex_equation (row, string_equation, integer_equation, solve_va
                             unique_value = remove_duplicates(solve_value)
                 solve_value = unique_value
                 return solve_value, string_priority, integer_equation
+
+            elif len(integer_equation) == 1:
+                solve_value = integer_equation
+                return solve_value, string_priority, integer_equation
             i += 1
         integer_equation = temp_string_equation
 
@@ -583,7 +599,7 @@ def main ():
     row = 0
     col = 0
     variable_used = 0
-    string_equation = "(not p and not q) implies (not r equivalent not s)"
+    string_equation = ""
     translated_string_equation = ""
     solve_value = []
     string_priority = []
@@ -639,3 +655,11 @@ def main ():
 # Run the main function
 if __name__ == "__main__":
     main()
+
+# Errors:
+# (not p and not q) implies
+# and p
+# not p
+# not p and
+# p and
+# p
