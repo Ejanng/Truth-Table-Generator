@@ -1,0 +1,3 @@
+pandq;
+(pandq)impliesr;
+(p and q) implies (r equivalent s);
