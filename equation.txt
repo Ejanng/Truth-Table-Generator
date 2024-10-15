@@ -6,3 +6,4 @@ not p;
 not p and not q;
 (not p and not q) equivalent (not r implies not s);
 (p implies q) and (r implies s);
+p;

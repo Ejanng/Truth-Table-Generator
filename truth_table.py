@@ -2,6 +2,18 @@
 import sys
 import os   
 
+def remove_duplicates(array):
+        seen = set()  # Initialize an empty set to keep track of seen items
+        result = []  # List to store unique items
+
+        # Iterate over each item in the array
+        for item in array:
+            if item not in seen:  # If the item hasn't been encountered yet
+                result.append(item)  # Add it to the result list
+                seen.add(item)  # Mark the item as seen by adding it to the set
+
+        return result  # Return the list of unique items
+
 def translate(variable_used, string_equation, translated_string_equation):
     # Initialize the count for each variable (p, q, r, s)
     countP = 0
@@ -97,8 +109,11 @@ def translate(variable_used, string_equation, translated_string_equation):
             print("Note: Must be p, q, r, s, and, or, not, implies, equivalent only!")
             sys.exit(1)  # Exit the program with an error
 
+    # Remove duplicate translation pairs (e.g., multiple 'p' translations)
+    translations = remove_duplicates(translations)
+
     # Printing the table header for the translation
-    print(f"{'Symbol':<15} | {'Translation':<15}")
+    print(f"{'Translation':<15} | {'Symbol':<15}")
     print('-' * 35)  # Separator line
 
     # Print each symbol and its corresponding translation
@@ -406,18 +421,6 @@ def is_equation_valid(integer_equation, string_equation):
 
 
 def calculate_complex_equation(row, string_equation, integer_equation, solve_value_for_not, not_length):
-    def remove_duplicates(array):
-        seen = set()  # Initialize an empty set to keep track of seen items
-        result = []  # List to store unique items
-
-        # Iterate over each item in the array
-        for item in array:
-            if item not in seen:  # If the item hasn't been encountered yet
-                result.append(item)  # Add it to the result list
-                seen.add(item)  # Mark the item as seen by adding it to the set
-
-        return result  # Return the list of unique items
-
     def calculate_equation(row, string_length, integer_equation):
         # Initialize variables
         i = 1  # Start from the second character
@@ -514,7 +517,6 @@ def calculate_complex_equation(row, string_equation, integer_equation, solve_val
     operator = []  # To store operators found
     temp_string_equation = []  # Temporary storage for equations during processing
     single_equation = []  # To store individual equations
-
 
     while 1:
         string_length = len(integer_equation)  # Length of the integer equation
@@ -740,10 +742,8 @@ def main():
         # Display the truth table of the evaluated propositions
         display_truth_table(propositions, translated_string_equation, solve_value, string_priority)
 
-        print("")
-        print("")
-        print("")
-
+        new_lines = 3
+        print("\n" * new_lines) # Add new lines for the next equation
 
 # Run the main function
 if __name__ == "__main__":
@@ -756,4 +756,3 @@ if __name__ == "__main__":
 # not p
 # not p and
 # p and
-# p
