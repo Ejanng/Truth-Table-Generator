@@ -1,3 +1,8 @@
-pandq;
-(pandq)impliesr;
+p and q;
+(p and q) implies r;
 (p and q) implies (r equivalent s);
+(p and not q) and (not p and r);
+not p;
+not p and not q;
+(not p and not q) equivalent (not r implies not s);
+(p implies q) and (r implies s);
