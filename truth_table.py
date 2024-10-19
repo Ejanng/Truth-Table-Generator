@@ -14,6 +14,7 @@ def remove_duplicates(array):
 
         return result  # Return the list of unique items
 
+
 def translate(variable_used, string_equation, translated_string_equation):
     # Initialize the count for each variable (p, q, r, s)
     countP = 0
@@ -126,7 +127,7 @@ def translate(variable_used, string_equation, translated_string_equation):
     # Return the updated variable_used count and the translated string equation
     return variable_used, translated_string_equation
 
-            
+
 def calculate_dimensions(variable_used, row, col):
     # Check if there are no variables used (p, q, r, s)
     if variable_used < 1:
@@ -627,12 +628,12 @@ def calculate_complex_equation(row, string_equation, integer_equation, solve_val
                         if string_priority[i] == string_priority[j] and i != j:
                             unique_value = remove_duplicates(solve_value)
                 solve_value = unique_value
-                return solve_value, string_priority, integer_equation
+                return solve_value, string_priority
 
             # If the equation has only one element, return it as the solution
             elif len(integer_equation) == 1:
                 solve_value = integer_equation
-                return solve_value, string_priority, integer_equation
+                return solve_value, string_priority
             
             i += 1  # Move to the next element
         
@@ -737,7 +738,7 @@ def main():
             string_equation = rewritten_string_equation  # Update the string equation
 
         # Calculate the result of the complex equation
-        solve_value, string_priority, value_of_the_equation = calculate_complex_equation(row, string_equation, integer_equation, solve_value_for_not, not_length)
+        solve_value, string_priority = calculate_complex_equation(row, string_equation, integer_equation, solve_value_for_not, not_length)
 
         # Display the truth table of the evaluated propositions
         display_truth_table(propositions, translated_string_equation, solve_value, string_priority)
